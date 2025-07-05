@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: latomais_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql_init:/docker-entrypoint-initdb.d
+    networks:
+      - latomais_net
+
+  posto1:
+    build: ./app
+    container_name: posto_1
+    environment:
+      POSTO_ID: 1
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    stdin_open: true
+    tty: true
+    networks:
+      - latomais_net
+    depends_on:
+      - mysql
+  
+  posto2:
+    build: ./app
+    container_name: posto_2
+    environment:
+      POSTO_ID: 2
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    stdin_open: true
+    tty: true
+    networks:
+      - latomais_net
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+
+networks:
+  latomais_net:
